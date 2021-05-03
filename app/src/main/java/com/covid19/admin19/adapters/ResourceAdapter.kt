@@ -51,10 +51,16 @@ class ResourceAdapter(val context: Context, val data: ArrayList<Resource>) :
 
         holder.btnVerify.setOnClickListener {
             context.startActivity(
-                Intent(context, VerificationActivity::class.java).putExtra(
-                    "name",
-                    item.Name
-                ).putExtra("time", item.time)
+                Intent(context, VerificationActivity::class.java)
+                    .putExtra("id", item.id)
+                    .putExtra("name", item.Name)
+                    .putExtra("city", item.city)
+                    .putExtra("state", item.state)
+                    .putExtra("provider", item.provider)
+                    .putExtra("address", item.address)
+                    .putExtra("contact", item.contact)
+                    .putExtra("time", item.time)
+                    .putExtra("more", item.more)
             )
         }
     }

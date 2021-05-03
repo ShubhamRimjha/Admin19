@@ -33,19 +33,19 @@ class MainActivity : AppCompatActivity() {
 //    private val moredetail = ArrayList<String>()
 //    private val timeadded = ArrayList<String>()
 
-    val resourceList: ArrayList<Resource> = TODO()
+    var resourceList = arrayListOf<Resource>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_main_screen)
         val sharedPreferences = getSharedPreferences("admin", MODE_PRIVATE)
 
-        var currentCity: String = sharedPreferences.getString("City", "").toString()
+        val currentCity: String = sharedPreferences.getString("City", "").toString()
 
         title = "Unverified Resources"
 //        toolbartitlehome.text = resourceselected
 //        selectedcity.text = "city - $cityselected"
-        getalldata(currentCity)
+        getalldata()
 
 
 //        goback.setOnClickListener {
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun getalldata(city: String) {
+    private fun getalldata() {
 
         val db = FirebaseFirestore.getInstance()
 
@@ -77,12 +77,15 @@ class MainActivity : AppCompatActivity() {
             // if we are here, we did not encounter an exception
             if (snapshot != null) {
                 // now, we have a populated shapshot
+
                 val documents = snapshot.documents
+
                 documents.forEach {
 
-                    if (it.get("verifiedBy").toString() == "not") {
+                    if (it.get("verifiedBY").toString() == "not") {
 
                         val resource = Resource(
+                            it.id,
                             it.get("resource").toString(),
                             it.get("city").toString(),
                             it.get("State").toString(),
