@@ -1,4 +1,4 @@
-package com.covid19.admin19
+package com.covid19.admin19.dataClasses
 
 data class Admin(
     val name: String,

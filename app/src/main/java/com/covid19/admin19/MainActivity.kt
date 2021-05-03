@@ -1,40 +1,51 @@
 package com.covid19.admin19
 
+//import kotlinx.android.synthetic.main.fragment_home.*
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.covid19.admin19.adapters.resourcesadapter
+import com.covid19.admin19.adapters.ResourceAdapter
+import com.covid19.admin19.dataClasses.Resource
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_home_main_screen.*
-//import kotlinx.android.synthetic.main.fragment_home.*
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
 
-    private val resourceName = ArrayList<String>()
-    private val cityname = ArrayList<String>()
-    private val statename = ArrayList<String>()
-    private val providername = ArrayList<String>()
-    private val providercontact = ArrayList<String>()
-    private val provideraddress = ArrayList<String>()
-    private val verifiedby = ArrayList<String>()
-    private val moredetail = ArrayList<String>()
-    private val timeadded = ArrayList<String>()
+    /// sorts by timing
+    var TimeSorter = Comparator<Resource> { b1, b2 ->
+        b1.time.compareTo(b2.time, true)
+    }
+
+    //----------------------------------- substituted by one resource data class-----------------------------------------
+//    private val resourceName = ArrayList<String>()
+//    private val cityname = ArrayList<String>()
+//    private val statename = ArrayList<String>()
+//    private val providername = ArrayList<String>()
+//    private val providercontact = ArrayList<String>()
+//    private val provideraddress = ArrayList<String>()
+//    private val verifiedby = ArrayList<String>()
+//    private val moredetail = ArrayList<String>()
+//    private val timeadded = ArrayList<String>()
+
+    val resourceList: ArrayList<Resource> = TODO()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_main_screen)
         val sharedPreferences = getSharedPreferences("admin", MODE_PRIVATE)
 
-        val cityselected = sharedPreferences.getString("City", "").toString()
+        var currentCity: String = sharedPreferences.getString("City", "").toString()
+
+        title = "Unverified Resources"
 //        toolbartitlehome.text = resourceselected
 //        selectedcity.text = "city - $cityselected"
-        getalldata(cityselected)
+        getalldata(currentCity)
 
 
 //        goback.setOnClickListener {
@@ -46,15 +57,16 @@ class MainActivity : AppCompatActivity() {
     private fun getalldata(city: String) {
 
         val db = FirebaseFirestore.getInstance()
-        resourceName.clear()
-        cityname.clear()
-        statename.clear()
-        providername.clear()
-        providercontact.clear()
-        provideraddress.clear()
-        verifiedby.clear()
-        timeadded.clear()
-        moredetail.clear()
+
+//        resourceName.clear()
+//        cityname.clear()
+//        statename.clear()
+//        providername.clear()
+//        providercontact.clear()
+//        provideraddress.clear()
+//        verifiedby.clear()
+//        timeadded.clear()
+//        moredetail.clear()
 
         db.collection("ADDED-RESOURCES").addSnapshotListener { snapshot, e ->
             // if there is an exception we want to skip.
@@ -69,51 +81,51 @@ class MainActivity : AppCompatActivity() {
                 documents.forEach {
 
                     if (it.get("verifiedBy").toString() == "not") {
-                        Log.w("state", it.get("city").toString(), e)
 
-//                        if ((it.get("city").toString() == city) and (it.get("resource")
-//                                .toString() == resource)
-//                        ) {
+                        val resource = Resource(
+                            it.get("resource").toString(),
+                            it.get("city").toString(),
+                            it.get("State").toString(),
+                            it.get("providername").toString(),
+                            it.get("providercontact").toString(),
+                            it.get("provideraddress").toString(),
+                            it.get("verifiedBY").toString(),
+                            it.id.take(22),
+                            it.get("comment").toString()
+                        )
 
-                        resourceName.add(it.get("resource").toString())
-                        cityname.add(it.get("city").toString())
-                        statename.add(it.get("State").toString())
-                        providername.add(it.get("providername").toString())
-                        providercontact.add(it.get("providercontact").toString())
-                        provideraddress.add(it.get("provideraddress").toString())
-                        verifiedby.add(it.get("verifiedBY").toString())
-                        timeadded.add(it.id.take(22))
-                        moredetail.add(it.get("comment").toString())
-
-//                        }
+                        resourceList.add(resource)
 
                     } else Log.i("state", it.get("city").toString(), e)
 
                 }
 
-
-                Log.w(
-                    "details",
-                    resourceName.count().toString() + cityname.count()
-                        .toString() + statename.count().toString() + providername.count()
-                        .toString() + providercontact.count().toString() + provideraddress.count()
-                        .toString(),
-                    e
-                )
-                Log.w(
-                    "details",
-                    verifiedby.count().toString() + timeadded.count()
-                        .toString() + moredetail.count().toString(),
-                    e
-                )
+                Collections.sort(resourceList, TimeSorter)
 
 
-                Log.w("cityfound", resourceName.toString(), e)
+//                Log.w(
+//                    "details",
+//                    resourceName.count().toString() + cityname.count()
+//                        .toString() + statename.count().toString() + providername.count()
+//                        .toString() + providercontact.count().toString() + provideraddress.count()
+//                        .toString(),
+//                    e
+//                )
+//                Log.w(
+//                    "details",
+//                    verifiedby.count().toString() + timeadded.count()
+//                        .toString() + moredetail.count().toString(),
+//                    e
+//                )
+//
+//
+//                Log.w("cityfound", resourceName.toString(), e)
 
-                if (resourceName.count() == 0) {
+
+                if (resourceList.isEmpty()) {
                     Toast.makeText(
                         this,
-                        "No data Available or Network Error Plz try again",
+                        "No data yolo",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -132,18 +144,9 @@ class MainActivity : AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val recyclerView: RecyclerView = mainRV
         recyclerView.layoutManager = layoutManager
-        val adapter = resourcesadapter(
-            this,
-            resourceName,
-            cityname,
-            statename,
-            providername,
-            providercontact,
-            provideraddress,
-            verifiedby,
-            moredetail,
-            timeadded
-        )
+
+        val adapter = ResourceAdapter(this, resourceList)
+
         recyclerView.adapter = adapter
 
     }
