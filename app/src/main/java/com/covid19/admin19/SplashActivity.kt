@@ -16,18 +16,16 @@ class SplashActivity : AppCompatActivity() {
 
         val sharedPreference: SharedPreferences? =
             getSharedPreferences("admin", Context.MODE_PRIVATE)
+        var intent: Intent
 
-        if (sharedPreference?.contains("City") == true)
-            Handler().postDelayed(
-                {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    overridePendingTransition(R.anim.leftout, R.anim.rightin)
-                    finish()
-                }, 2000
-            )
-        else Handler().postDelayed(
+        if (sharedPreference?.contains("City") == true) intent =
+            Intent(this, MainActivity::class.java)
+        else intent = Intent(this, StartActivity::class.java)
+
+
+        Handler().postDelayed(
             {
-                startActivity(Intent(this, StartActivity::class.java))
+                startActivity(intent)
                 overridePendingTransition(R.anim.leftout, R.anim.rightin)
                 finish()
             }, 2000

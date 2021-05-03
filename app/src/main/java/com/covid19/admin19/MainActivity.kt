@@ -29,21 +29,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_main_screen)
+        val sharedPreferences = getSharedPreferences("admin", MODE_PRIVATE)
 
-        val resourceselected = intent.getStringExtra("ClickedOption").toString()
-        val cityselected = intent.getStringExtra("City").toString()
-        toolbartitlehome.text = resourceselected
-        selectedcity.text = "city - $cityselected"
-        getalldata(cityselected, resourceselected)
+        val cityselected = sharedPreferences.getString("City", "").toString()
+//        toolbartitlehome.text = resourceselected
+//        selectedcity.text = "city - $cityselected"
+        getalldata(cityselected)
 
 
-        goback.setOnClickListener {
-            finish()
-        }
+//        goback.setOnClickListener {
+//            finish()
+//        }
     }
 
 
-    private fun getalldata(city: String, resource: String) {
+    private fun getalldata(city: String) {
 
         val db = FirebaseFirestore.getInstance()
         resourceName.clear()
@@ -71,21 +71,21 @@ class MainActivity : AppCompatActivity() {
                     if (it.get("verifiedBy").toString() == "not") {
                         Log.w("state", it.get("city").toString(), e)
 
-                        if ((it.get("city").toString() == city) and (it.get("resource")
-                                .toString() == resource)
-                        ) {
+//                        if ((it.get("city").toString() == city) and (it.get("resource")
+//                                .toString() == resource)
+//                        ) {
 
-                            resourceName.add(it.get("resource").toString())
-                            cityname.add(it.get("city").toString())
-                            statename.add(it.get("State").toString())
-                            providername.add(it.get("providername").toString())
-                            providercontact.add(it.get("providercontact").toString())
-                            provideraddress.add(it.get("provideraddress").toString())
-                            verifiedby.add(it.get("verifiedBY").toString())
-                            timeadded.add(it.id.take(22))
-                            moredetail.add(it.get("comment").toString())
+                        resourceName.add(it.get("resource").toString())
+                        cityname.add(it.get("city").toString())
+                        statename.add(it.get("State").toString())
+                        providername.add(it.get("providername").toString())
+                        providercontact.add(it.get("providercontact").toString())
+                        provideraddress.add(it.get("provideraddress").toString())
+                        verifiedby.add(it.get("verifiedBY").toString())
+                        timeadded.add(it.id.take(22))
+                        moredetail.add(it.get("comment").toString())
 
-                        }
+//                        }
 
                     } else Log.i("state", it.get("city").toString(), e)
 
