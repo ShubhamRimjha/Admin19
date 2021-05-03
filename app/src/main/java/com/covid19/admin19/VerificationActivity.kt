@@ -16,7 +16,7 @@ class VerificationActivity : AppCompatActivity() {
 
         if (intent != null) {
             txtName.text = intent.getStringExtra("name")
-            txtCity.text = "${intent.getStringExtra("city")}${intent.getStringExtra("state")}"
+            txtCity.text = "${intent.getStringExtra("city")}, ${intent.getStringExtra("state")}"
             txtProvider.text = intent.getStringExtra("provider")
             txtAddress.text = intent.getStringExtra("address")
             txtContact.text = intent.getStringExtra("contact")
@@ -24,31 +24,70 @@ class VerificationActivity : AppCompatActivity() {
         }
 
         btnCall.setOnClickListener {
-            val callIntent = Intent(Intent.ACTION_CALL)
-            callIntent.data = Uri.parse("tel:" + txtContact.text)
+            val callIntent = Intent(Intent.ACTION_DIAL)
+            callIntent.data = Uri.parse("tel: +91" + txtContact.text)
             startActivity(callIntent)
         }
 
         btnVerify.setOnClickListener {
-            AlertDialog.Builder(applicationContext).setMessage("You sure this reource is verified?")
+            AlertDialog.Builder(this)
+                .setCancelable(true)
+                .setTitle("Verification Prompt")
+                .setMessage("You sure this reource is verified?")
+                .setPositiveButton("Verify") { _, _ ->
+                    modifythisResource(intent.getStringExtra("id").toString(), 1)
+                }
                 .setNegativeButton(
                     "Cancel"
                 ) { _, _ -> }
-                .setPositiveButton("Verify") { _, _ ->
-                    verifythisResource(intent.getStringExtra("id"))
+                .show()
+
+        }
+
+        btnDelete.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setCancelable(true)
+                .setTitle("Deletion Prompt")
+                .setMessage("You wanna delete this resource?")
+                .setNegativeButton(
+                    "Cancel"
+                ) { _, _ -> }
+                .setPositiveButton("Delete") { _, _ ->
+                    modifythisResource(intent.getStringExtra("id").toString(), 2)
                 }
-                .setTitle("Verification Prompt")
-                .create().show()
+                .show()
 
         }
     }
 
-    private fun verifythisResource(id: String?) {
-
+    private fun modifythisResource(id: String, mode: Int) {
+        val sharedPreferences = getSharedPreferences("admin", MODE_PRIVATE)
         val db = FirebaseFirestore.getInstance()
-        val resoRef = db.collection("ADDED-RESOURCES").document(id.toString())
-        resoRef.update("verifiedBY", getSharedPreferences("Name", MODE_PRIVATE))
+        val resoRef = db.collection("ADDED-RESOURCES").document(id)
 
-
+        when (mode) {
+            1 -> {
+//                update verifiedBY field in document
+                resoRef.update(
+                    "verifiedBY",
+                    "${
+                        sharedPreferences.getString(
+                            "Name",
+                            "Anon"
+                        )
+                    } - (${sharedPreferences.getString("Phone", "-")})"
+                )
+                    .addOnSuccessListener {
+                        startActivity(Intent(this, MainActivity::class.java))
+                    }
+            }
+            2 -> {
+//                delete document
+                resoRef.delete()
+                    .addOnSuccessListener {
+                        startActivity(Intent(this, MainActivity::class.java))
+                    }
+            }
+        }
     }
 }

@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_margin="5dp"
-            android:layout_weight=".5"
+            android:layout_weight="1"
             android:background="@color/cardview_dark_background"
             android:src="@drawable/ic_action_verify"
             android:tint="@color/white" />
@@ -92,7 +92,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:background="@color/cardview_dark_background"
-            android:src="@drawable/ic_action_verify"
+            android:src="@drawable/ic_action_delete"
             android:tint="@color/white" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

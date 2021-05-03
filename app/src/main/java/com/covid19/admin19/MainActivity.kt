@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                             it.get("providercontact").toString(),
                             it.get("provideraddress").toString(),
                             it.get("verifiedBY").toString(),
-                            it.id.take(22),
+                            it.get("time").toString(),
                             it.get("comment").toString()
                         )
 

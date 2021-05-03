@@ -9,6 +9,6 @@ data class Resource(
     val contact: String,
     val address: String,
     val verifier: String,
-    val more: String,
-    val time: String
+    val time: String,
+    val more: String
 )
